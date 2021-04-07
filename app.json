@@ -2,7 +2,7 @@
   "expo": {
     "name": "ReferAFriend",
     "slug": "ReferAFriend",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "sdkVersion": "40.0.0",
@@ -24,7 +24,9 @@
     "android": {
       "permissions": [
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_CONTACTS",
+        "WRITE_CONTACTS"
       ],
       "package": "com.ivanzapata.page",
       "adaptiveIcon": {
