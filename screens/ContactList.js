@@ -163,7 +163,7 @@ class ContactList extends React.Component {
     this.getContactList(this.state.selectedContacts);
     const { navigation } = this.props;
 
-    const to = ["niranjanamoiz@gmail.com"]; // string or array of email addresses
+    const to = ["conseiller@garde-manger.com"]; // string or array of email addresses
     email(to, {
       subject:
         navigation.getParam("language") === "en"
@@ -178,6 +178,10 @@ class ContactList extends React.Component {
             " " +
             navigation.getParam("Phone") +
             " " +
+            locale.en.emailBodyWithRep +
+            " " +
+            navigation.getParam("Rep") +
+            " " +
             locale.en.emailBody + 
             this.formattedContactList
           : navigation.getParam("Name") +
@@ -185,6 +189,11 @@ class ContactList extends React.Component {
             locale.fr.emailBodyWithPhone +
             " " +
             navigation.getParam("Phone") +
+            " " +
+            locale.fr.emailBodyWithRep +
+            " " +
+            navigation.getParam("Rep") +
+            
             " " +
             locale.fr.emailBody + 
             this.formattedContactList,

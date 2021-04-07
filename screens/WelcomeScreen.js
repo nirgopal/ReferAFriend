@@ -39,6 +39,13 @@ class WelcomeScreen extends React.Component {
   componentDidMount() {
     this.setState({ localization: "fr" });
     ReviewSchema = yup.object({
+      firstName: yup
+        .string()
+        .required(
+          this.state.localization === "en"
+            ? locale.en.required
+            : locale.fr.required
+        ),
       phoneNumber: yup
         .string()
         .required(
@@ -64,11 +71,26 @@ class WelcomeScreen extends React.Component {
             ? locale.en.invalidNumber
             : locale.fr.invalidNumber
         ),
+        
+        repName:yup
+        .string().required(
+          this.state.localization === "en"
+            ? locale.en.required
+            : locale.fr.required
+        )
+
     });
   }
 
   componentDidUpdate() {
     ReviewSchema = yup.object({
+      firstName: yup
+        .string()
+        .required(
+          this.state.localization === "en"
+            ? locale.en.required
+            : locale.fr.required
+        ),
       phoneNumber: yup
         .string()
         .required(
@@ -94,13 +116,7 @@ class WelcomeScreen extends React.Component {
             ? locale.en.invalidNumber
             : locale.fr.invalidNumber
         ),
-        firstName: yup
-        .string()
-        .required(
-          this.state.localization === "en"
-            ? locale.en.required
-            : locale.fr.required
-        ),
+        
         repName:yup
         .string().required(
           this.state.localization === "en"
@@ -127,14 +143,56 @@ class WelcomeScreen extends React.Component {
     const { localization } = this.state;
     return (
       <Container>
+        <Image
+            style={{ alignItems: "center", marginLeft: 120 }}
+            source={require("../assets/logo2.jpg")}
+          />
+          
+          <Card transparent>
+            <CardItem>
+              <Body>
+                <Text>
+                {localization === "en"
+                        ? locale.en.welcomeText
+                        : locale.fr.welcomeText}
+                </Text>
+                <Item style={{ paddingBottom: 10 ,paddingTop: 50,
+                  paddingHorizontal: 100}}>
+                  <CheckBox 
+                    style={{ marginRight: 20}}
+                    color="#C4262E"           
+                    borderColor="black"
+                    checked={this.state.localization === "en" ? true : false}
+                    onPress={() =>
+                      this.state.localization === "en"
+                        ? this.setState({ localization: "fr" })
+                        : this.setState({ localization: "en" })
+                    }
+                  />
+                  <Text style={{ paddingRight: 40}}>EN</Text>
+
+                  <CheckBox
+                    style={{ marginRight: 20}}
+                    color="#C4262E"           
+                    borderColor="black"
+                    checked={this.state.localization === "fr" ? true : false}
+                    onPress={() =>
+                      this.state.localization === "fr"
+                        ? this.setState({ localization: "en" })
+                        : this.setState({ localization: "fr" })
+                    }
+                  />
+                  <Text style={{  color: "black" }}>FR</Text>
+                </Item>
+              </Body>
+            </CardItem>
+          </Card>
+        
         <ImageBackground
           style={{ flex: 1 }}
           source={require("../assets/shutterstock_483310882-3.jpg")}
         >
-          <Image
-            style={{ alignItems: "center", marginLeft: 120 }}
-            source={require("../assets/logo2.jpg")}
-          />
+          
           <Formik
             initialValues={{
               firstName: "",
@@ -169,36 +227,8 @@ class WelcomeScreen extends React.Component {
                   paddingHorizontal: 125,
                 }}
               >
-                <Item>
-                    <Text style={{color:"red",justifyContent:"center"}}>{locale.fr.welcomeText}</Text>
-                  </Item>
-                <Item style={{ paddingBottom: 10  }}>
-                  <CheckBox 
-                    style={{ marginRight: 20}}
-                    color="#C4262E"           
-                    borderColor="black"
-                    checked={this.state.localization === "en" ? true : false}
-                    onPress={() =>
-                      this.state.localization === "en"
-                        ? this.setState({ localization: "fr" })
-                        : this.setState({ localization: "en" })
-                    }
-                  />
-                  <Text style={{ paddingRight: 40, color: "Black" }}>EN</Text>
-
-                  <CheckBox
-                    style={{ marginRight: 20}}
-                    color="#C4262E"           
-                    borderColor="black"
-                    checked={this.state.localization === "fr" ? true : false}
-                    onPress={() =>
-                      this.state.localization === "fr"
-                        ? this.setState({ localization: "en" })
-                        : this.setState({ localization: "fr" })
-                    }
-                  />
-                  <Text style={{  color: "Black" }}>FR</Text>
-                </Item>
+                
+                
                 <Item
                   style={{
                     backgroundColor: "#C4262E",
@@ -223,6 +253,11 @@ class WelcomeScreen extends React.Component {
                     onChangeText={handleChange("firstName")}
                     onBlur={handleBlur("firstName")}
                   />
+                  {touched.firstName && errors.firstName && (
+                    <Right>
+                      <Icon style={{ color: "black" }} name="close-circle" />
+                    </Right>
+                  )}
                 </Item>
                  <Item>
                   {touched.firstName && errors.firstName && (
@@ -237,7 +272,8 @@ class WelcomeScreen extends React.Component {
                     backgroundColor: "#C4262E",
                    width: 200,
                     marginBottom: 10,
-                    borderColor: "black"
+                    borderColor: "black",
+                    marginTop: 10
                   }}
                   rounded
                   success
@@ -255,13 +291,10 @@ class WelcomeScreen extends React.Component {
                     onBlur={handleBlur("phoneNumber")}
                     maxLength={10}
                   />
-                  {/* <Item style={{ paddingBottom:5}}>
-              {touched.phoneNumber && errors.phoneNumber && 
-              <Text style={{backgroundColor:"red" }}> {errors.phoneNumber} </Text>}
-              </Item> */}
+                  
                   {touched.phoneNumber && errors.phoneNumber && (
                     <Right>
-                      <Icon style={{ color: "red" }} name="close-circle" />
+                      <Icon style={{ color: "black" }} name="close-circle" />
                     </Right>
                   )}
                 </Item>
@@ -298,6 +331,11 @@ class WelcomeScreen extends React.Component {
                     onChangeText={handleChange("repName")}
                     onBlur={handleBlur("repName")}
                   />
+                  {touched.repName && errors.repName && (
+                    <Right>
+                      <Icon style={{ color: "black" }} name="close-circle" />
+                    </Right>
+                  )}
                 </Item>
                  <Item>
                   {touched.repName && errors.repName && (

@@ -6,10 +6,16 @@ import ContactList from "../screens/ContactList";
 
 const screens ={
     WelcomeScreen: {
-        screen : WelcomeScreen
+        screen : WelcomeScreen,
+        navigationOptions:{
+            title:"Référez Un Ami"
+        }
     },
     ContactList: {
-        screen : ContactList
+        screen : ContactList,
+        navigationOptions:{
+            title:"Contactes"
+        }
     }
 }
 
