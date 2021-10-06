@@ -2,7 +2,7 @@
   "expo": {
     "name": "ReferAFriend",
     "slug": "ReferAFriend",
-    "version": "2.0.0",
+    "version": "5.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "sdkVersion": "40.0.0",
@@ -19,7 +19,15 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ivanzapata.page"
+      "bundleIdentifier": "com.ivanzapata.page",
+      "buildNumber": "5.2",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
+    },
+    "locales": {
+      "en": "./languages/en.json",
+      "fr": "./languages/fr.json"
     },
     "android": {
       "permissions": [
@@ -29,6 +37,7 @@
         "WRITE_CONTACTS"
       ],
       "package": "com.ivanzapata.page",
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

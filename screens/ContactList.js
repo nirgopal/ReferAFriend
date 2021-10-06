@@ -86,9 +86,9 @@ class ContactList extends React.Component {
   getContactList = (items) => {
     
     items.map((element) => {
-      this.contactList.push("\n");
+     // this.contactList.push("\n");
       element.firstName !== undefined &&
-        this.contactList.push(element.firstName);
+        this.contactList.push("*"+element.firstName);
       element.lastName !== undefined && this.contactList.push(element.lastName);
       element.phoneNumbers &&
         element.phoneNumbers !== undefined &&
@@ -98,7 +98,7 @@ class ContactList extends React.Component {
         element.emails !== undefined &&
         element.emails.length > 0 &&
         this.contactList.push(element.emails[0].email);
-      this.contactList.push("\n");
+     // this.contactList.push("\n");
     });
     
     this.formattedContactList.push(this.contactList.join(' '));

@@ -1,13 +1,7 @@
-import React, { useState } from "react";
-import {
-  ImageBackground,
-  StyleSheet, 
-  Image  
-} from "react-native";
+import React from "react";
+import { ImageBackground, StyleSheet, Image } from "react-native";
 import {
   Container,
-  Header,
-  Content,
   Button,
   Text,
   Card,
@@ -16,18 +10,8 @@ import {
   Icon,
   Item,
   Input,
-  Radio,
-  Left,
-  Right,
-  CheckBox
 } from "native-base";
 import locale from "../locales";
-import { Formik } from "formik";
-import * as yup from "yup";
-
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-
-let ReviewSchema;
 
 class WelcomeScreen extends React.Component {
   constructor() {
@@ -37,204 +21,143 @@ class WelcomeScreen extends React.Component {
     };
   }
   componentDidMount() {
-    this.setState({ localization: "fr" });
-    ReviewSchema = yup.object({
-      firstName: yup
-        .string()
-        .required(
-          this.state.localization === "en"
-            ? locale.en.required
-            : locale.fr.required
-        ),
-      phoneNumber: yup
-        .string()
-        .required(
-          this.state.localization === "en"
-            ? locale.en.required
-            : locale.fr.required
-        )
-        .min(
-          10,
-          this.state.localization === "en"
-            ? locale.en.shortNumber
-            : locale.fr.shortNumber
-        )
-        .max(
-          10,
-          this.state.localization === "en"
-            ? locale.en.longNumber
-            : locale.fr.longNumber
-        )
-        .matches(
-          phoneRegExp,
-          this.state.localization === "en"
-            ? locale.en.invalidNumber
-            : locale.fr.invalidNumber
-        ),
-        
-        repName:yup
-        .string().required(
-          this.state.localization === "en"
-            ? locale.en.required
-            : locale.fr.required
-        )
-
-    });
+    this.setState({ name: null });
+    this.setState({ phone: null });
+    this.setState({ rep: null });
+    this.setState({ nameError: null });
+    this.setState({ phoneError: null });
+    this.setState({ repError: null });
+    this.setState({ invalidPhone: false });
   }
 
-  componentDidUpdate() {
-    ReviewSchema = yup.object({
-      firstName: yup
-        .string()
-        .required(
-          this.state.localization === "en"
-            ? locale.en.required
-            : locale.fr.required
-        ),
-      phoneNumber: yup
-        .string()
-        .required(
-          this.state.localization === "en"
-            ? locale.en.required
-            : locale.fr.required
-        )
-        .min(
-          10,
-          this.state.localization === "en"
-            ? locale.en.shortNumber
-            : locale.fr.shortNumber
-        )
-        .max(
-          10,
-          this.state.localization === "en"
-            ? locale.en.longNumber
-            : locale.fr.longNumber
-        )
-        .matches(
-          phoneRegExp,
-          this.state.localization === "en"
-            ? locale.en.invalidNumber
-            : locale.fr.invalidNumber
-        ),
-        
-        repName:yup
-        .string().required(
-          this.state.localization === "en"
-            ? locale.en.required
-            : locale.fr.required
-        )
-
-    });
-  }
+  componentDidUpdate() {}
 
   componentWillUnmount() {
     // fix Warning: Can't perform a React state update on an unmounted component
-    this.setState = (state,callback)=>{
-        return;
+    this.setState = (state, callback) => {
+      return;
     };
-}
-  pressHandlerForForm = (values) => {
-    console.log(values);
+  }
+
+  handleSubmit = () => {
     const { navigation } = this.props;
-    navigation.navigate("ContactList");
+    const { name, phone, rep, invalidPhone } = this.state;
+    if (name === null) {
+      navigation.getParam("language") === "en"
+        ? this.setState({ nameError: locale.en.required })
+        : this.setState({ nameError: locale.fr.required });
+    }
+    if (phone === null) {
+      navigation.getParam("language") === "en"
+        ? this.setState({ phoneError: locale.en.required })
+        : this.setState({ phoneError: locale.fr.required });
+    }
+    if (phone !== null) {
+      if (phone.match(/\d/g).length !== 10) {
+        this.setState({ invalidPhone: true });
+        navigation.getParam("language") === "en"
+          ? this.setState({ phoneError: locale.en.invalidNumber })
+          : this.setState({ phoneError: locale.fr.invalidNumber });
+      }
+    }
+    if (rep === null) {
+      navigation.getParam("language") === "en"
+        ? this.setState({ repError: locale.en.required })
+        : this.setState({ repError: locale.fr.required });
+    }
+
+    if (
+      name !== null &&
+      phone !== null &&
+      phone.match(/\d/g).length === 10 &&
+      rep !== null
+    ) {
+      navigation.navigate("ContactList", {
+        Name: this.state.name,
+        Phone: this.state.phone,
+        Rep: this.state.rep,
+        language: this.state.localization,
+      });
+    }
+  };
+
+  onPressSendEmail = (name, phoneNumber) => {
+    email("conseiller@garde-manger.com", {
+      subject:
+        this.state.localization === "en"
+          ? locale.en.newEmail
+          : locale.fr.newEmail,
+
+      body: name,
+      phoneNumber,
+    }).catch(console.error);
+    //navigation.navigate("WelcomeScreen");
   };
 
   render() {
     const { localization } = this.state;
+    const { navigation } = this.props;
+
     return (
       <Container>
-        <Image
-            style={{ alignItems: "center", marginLeft: 120 }}
-            source={require("../assets/logo2.jpg")}
-          />
-          
-          <Card transparent>
-            <CardItem>
-              <Body>
-                <Text>
-                {localization === "en"
-                        ? locale.en.welcomeText
-                        : locale.fr.welcomeText}
-                </Text>
-                <Item style={{ paddingBottom: 10 ,paddingTop: 50,
-                  paddingHorizontal: 100}}>
-                  <CheckBox 
-                    style={{ marginRight: 20}}
-                    color="#C4262E"           
-                    borderColor="black"
-                    checked={this.state.localization === "en" ? true : false}
-                    onPress={() =>
-                      this.state.localization === "en"
-                        ? this.setState({ localization: "fr" })
-                        : this.setState({ localization: "en" })
-                    }
-                  />
-                  <Text style={{ paddingRight: 40}}>EN</Text>
-
-                  <CheckBox
-                    style={{ marginRight: 20}}
-                    color="#C4262E"           
-                    borderColor="black"
-                    checked={this.state.localization === "fr" ? true : false}
-                    onPress={() =>
-                      this.state.localization === "fr"
-                        ? this.setState({ localization: "en" })
-                        : this.setState({ localization: "fr" })
-                    }
-                  />
-                  <Text style={{  color: "black" }}>FR</Text>
-                </Item>
-              </Body>
-            </CardItem>
-          </Card>
-        
         <ImageBackground
           style={{ flex: 1 }}
           source={require("../assets/shutterstock_483310882-3.jpg")}
         >
-          
-          <Formik
-            initialValues={{
-              firstName: "",
-              phoneNumber: "",
-              repName:"",
-            }}
-            validationSchema={ReviewSchema}
-            onSubmit={(values ) => {
-              
-              const { navigation } = this.props;
-              navigation.navigate("ContactList", {
-                Name: values.firstName,
-                Phone: values.phoneNumber,
-                Rep: values.repName,
-                language: this.state.localization,
-              });
+          <Card
+            transparent
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              alignContent: "center",
+              //height: 100,
+              //marginTop:150,
+              paddingRight: 30,
+              paddingLeft: 30,
+              borderBottomColor: "white",
             }}
           >
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-            }) => (
-              <Content
-                contentContainerStyle={{
-                  justifyContent: "center",
+            <CardItem
+              style={{
+                //display:'flex',
+                alignItems: "center",
+                justifyContent: "center",
+                alignContent: "center",
+                // marginRight:350
+              }}
+            >
+              <Body
+                style={{
+                  flex: 1,
+                  display: "flex",
                   alignItems: "center",
-                  paddingTop: 50,
-                  paddingHorizontal: 125,
+                  justifyContent: "center",
+                  alignContent: "center",
                 }}
               >
-                
-                
+                <Item style={{ borderBottomWidth: 0 }}>
+                  <Image
+                    style={{ alignItems: "center" }}
+                    source={require("../assets/logo2.jpg")}
+                  />
+                </Item>
+
+                <Item style={{ borderBottomWidth: 0 }}>
+                  <Text style={{ fontFamily: "Arial" }}>
+                    {navigation.getParam("language") === "en"
+                      ? locale.en.welcomeText
+                      : locale.fr.welcomeText}
+                  </Text>
+                </Item>
                 <Item
                   style={{
-                    backgroundColor: "#C4262E",
-                    width: 200,
+                    backgroundColor: "white",
+                    width: 300,
                     marginBottom: 10,
-                    borderColor: "black"
+                    marginTop: 5,
+                    borderColor: "black",
                   }}
                   rounded
                 >
@@ -243,76 +166,74 @@ class WelcomeScreen extends React.Component {
                     active
                     name="person-circle-outline"
                   />
+
                   <Input
-                    style={{ color: "black" }}
+                    style={{ color: "black", fontFamily: "Arial" }}
                     placeholder={
-                      localization === "en"
+                      navigation.getParam("language") === "en"
                         ? locale.en.nameLabel
                         : locale.fr.nameLabel
                     }
-                    onChangeText={handleChange("firstName")}
-                    onBlur={handleBlur("firstName")}
+                    placeholderTextColor={"black"}
+                    onChangeText={(name) =>
+                      this.setState({ name: name }, () =>
+                        this.setState({ nameError: null })
+                      )
+                    }
                   />
-                  {touched.firstName && errors.firstName && (
-                    <Right>
-                      <Icon style={{ color: "black" }} name="close-circle" />
-                    </Right>
-                  )}
                 </Item>
-                 <Item>
-                  {touched.firstName && errors.firstName && (
-                    <Text style={{ backgroundColor: "red" }}>
-                      {" "}
-                      {errors.firstName}{" "}
+                {this.state.nameError && (
+                  <Item style={{ borderBottomWidth: 0, padding: 5 }}>
+                    <Text style={{ color: "red", fontFamily: "Arial" }}>
+                      {this.state.nameError}
                     </Text>
-                  )}
-                </Item>
+                  </Item>
+                )}
                 <Item
                   style={{
-                    backgroundColor: "#C4262E",
-                   width: 200,
+                    backgroundColor: "white",
+                    width: 300,
                     marginBottom: 10,
                     borderColor: "black",
-                    marginTop: 10
                   }}
                   rounded
-                  success
                 >
-                  <Icon style={{ color: "black" }} active name="call-outline" />
-                  <Input 
-                   
+                  <Icon
+                    style={{ color: "black" }}
+                    active
+                    name="phone"
+                    type="AntDesign"
+                  />
+
+                  <Input
+                    style={{ color: "black", fontFamily: "Arial" }}
                     placeholder={
-                      localization === "en"
+                      navigation.getParam("language") === "en"
                         ? locale.en.phoneLabel
                         : locale.fr.phoneLabel
                     }
-                    keyboardType='numeric'
-                    onChangeText={handleChange("phoneNumber")}
-                    onBlur={handleBlur("phoneNumber")}
-                    maxLength={10}
+                    keyboardType="numeric"
+                    placeholderTextColor={"black"}
+                    onChangeText={(phone) =>
+                      this.setState({ phone: phone }, () =>
+                        this.setState({ phoneError: null })
+                      )
+                    }
                   />
-                  
-                  {touched.phoneNumber && errors.phoneNumber && (
-                    <Right>
-                      <Icon style={{ color: "black" }} name="close-circle" />
-                    </Right>
-                  )}
                 </Item>
-                <Item>
-                  {touched.phoneNumber && errors.phoneNumber && (
-                    <Text style={{ backgroundColor: "red" }}>
-                      {" "}
-                      {errors.phoneNumber}{" "}
+                {this.state.phoneError && (
+                  <Item style={{ borderBottomWidth: 0, padding: 5 }}>
+                    <Text style={{ color: "red", fontFamily: "Arial" }}>
+                      {this.state.phoneError}
                     </Text>
-                  )}
-                </Item>
+                  </Item>
+                )}
                 <Item
                   style={{
-                    backgroundColor: "#C4262E",
-                    width: 200,
+                    backgroundColor: "white",
+                    width: 300,
                     marginBottom: 10,
                     borderColor: "black",
-                    marginTop: 10,
                   }}
                   rounded
                 >
@@ -321,59 +242,67 @@ class WelcomeScreen extends React.Component {
                     active
                     name="person-circle-outline"
                   />
+
                   <Input
-                    style={{ color: "black" }}
+                    style={{ color: "black", fontFamily: "Arial" }}
                     placeholder={
-                      localization === "en"
+                      navigation.getParam("language") === "en"
                         ? locale.en.rep
                         : locale.fr.rep
                     }
-                    onChangeText={handleChange("repName")}
-                    onBlur={handleBlur("repName")}
+                    placeholderTextColor={"black"}
+                    onChangeText={(rep) =>
+                      this.setState({ rep: rep }, () =>
+                        this.setState({ repError: null })
+                      )
+                    }
                   />
-                  {touched.repName && errors.repName && (
-                    <Right>
-                      <Icon style={{ color: "black" }} name="close-circle" />
-                    </Right>
-                  )}
                 </Item>
-                 <Item>
-                  {touched.repName && errors.repName && (
-                    <Text style={{ backgroundColor: "red" }}>
-                      {" "}
-                      {errors.repName}{" "}
-                    </Text>
-                  )}
-                </Item>               
+                {this.state.repError && (
+                  <Item
+                    style={{
+                      borderBottomWidth: 0,
+                      padding: 5,
+                      fontFamily: "Arial",
+                    }}
+                  >
+                    <Text style={{ color: "red" }}>{this.state.repError}</Text>
+                  </Item>
+                )}
 
-                <Item>
+                <Item style={{ borderBottomWidth: 0, fontFamily: "Arial" }}>
                   <Button
                     style={{
                       backgroundColor: "#C4262E",
-                      width: 200,
-                      marginBottom: 10,
-                      marginTop: 10,
-                      borderColor: "black"
+
+                      borderColor: "black",
                     }}
                     rounded
                     warning
-                    onPress={handleSubmit}
+                    onPress={this.handleSubmit}
                   >
                     <Icon
-                      style={{ color: "black" }}
+                      style={{ color: "black", alignSelf: "auto" }}
                       active
-                      name="people-outline"
+                      name="user"
+                      type="AntDesign"
                     />
-                    <Text style={{ color: "black", marginRight: 25 }}>
-                      {localization === "en"
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontFamily: "Arial",
+                      }}
+                    >
+                      {navigation.getParam("language") === "en"
                         ? locale.en.referButton
                         : locale.fr.referButton}
                     </Text>
                   </Button>
                 </Item>
-              </Content>
-            )}
-          </Formik>
+              </Body>
+            </CardItem>
+          </Card>
         </ImageBackground>
       </Container>
     );
